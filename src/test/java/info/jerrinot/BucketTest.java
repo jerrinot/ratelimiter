@@ -1,16 +1,16 @@
 package info.jerrinot;
 
 import com.hazelcast.client.HazelcastClient;
+import com.hazelcast.map.IMap;
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.Bucket4j;
 import io.github.bucket4j.BucketConfiguration;
 import io.github.bucket4j.grid.GridBucketState;
 import io.github.bucket4j.grid.ProxyManager;
-import io.github.bucket4j.grid.jcache.JCache;
+import io.github.bucket4j.grid.hazelcast.Hazelcast;
 import org.junit.Test;
 
-import javax.cache.Cache;
 import java.time.Duration;
 
 public final class BucketTest {
@@ -24,10 +24,10 @@ public final class BucketTest {
     @Test
     public void notReallyATest() throws Exception {
         var hz = HazelcastClient.newHazelcastClient();
-        Cache<String, GridBucketState> cache = hz.getCacheManager().getCache(CACHE_NAME);
-        ProxyManager<String> buckets = Bucket4j.extension(JCache.class).proxyManagerForCache(cache);
-
+        IMap<String, GridBucketState> cache = hz.getMap(CACHE_NAME);
+        ProxyManager<String> buckets = Bucket4j.extension(Hazelcast.class).proxyManagerForMap(cache);
         Bucket bucket = buckets.getProxy(IP, BUCKET_CONFIGURATION);
+
         for (;;) {
             if (bucket.tryConsume(1)) {
                 System.out.println('.');
