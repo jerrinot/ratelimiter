@@ -1,0 +1,8 @@
+hazelcast:
+  cache:
+    myCache:
+      backup-count: 0
+      eviction:
+        size: 100000
+        max-size-policy: ENTRY_COUNT
+        eviction-policy: LFU
